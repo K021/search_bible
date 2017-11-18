@@ -6,8 +6,6 @@ base = os.path.dirname(__file__)
 kb_path = os.path.join(base, "KoreanBible.txt")
 eb_path = os.path.join(base, "EnglishBible.txt")
 print(kb_path)
-# kb_path = "./KoreanBible.txt"
-# eb_path = "./EnglishBible.txt"
 
 while True:
     # 검색할 Scripture 선택
