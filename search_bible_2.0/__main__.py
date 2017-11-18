@@ -5,7 +5,6 @@ from functions import search_scripture
 base = os.path.dirname(__file__)
 kb_path = os.path.join(base, "KoreanBible.txt")
 eb_path = os.path.join(base, "EnglishBible.txt")
-print(kb_path)
 
 while True:
     # 검색할 Scripture 선택
