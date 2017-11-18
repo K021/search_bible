@@ -17,11 +17,12 @@ def search_scripture(scripture_path, sub_scripture_path=None, is_lower=True):
     line_index = 0
     line_index_list = list()
 
+    print('=================================================')
     for line in scripture:
         line_index += 1
-        line = line.lower() if is_lower else line
+        line_temp = line.lower() if is_lower else line
         for i, plus_key in enumerate(plus_keys):
-            if plus_key not in line:
+            if plus_key not in line_temp:
                 break
             elif i == (len(plus_keys) - 1):
                 if not minus_keys:
@@ -32,15 +33,16 @@ def search_scripture(scripture_path, sub_scripture_path=None, is_lower=True):
                     print_scripture_by_line(sub_scripture_path, line_index)
                 else:
                     for k, minus_key in enumerate(minus_keys):
-                        if minus_key in line:
+                        if minus_key in line_temp:
                             break
                         elif k == (len(minus_keys) - 1):
                             number_of_result += 1
                             line_index_list.append(line_index)
                             print(line)
                             print_scripture_by_line(sub_scripture_path, line_index)
-    print('------------------------------------------------')
+    print('-------------------------------------------------')
     print('{} verses'.format(number_of_result))
+    print('=================================================')
 
     scripture.close()
     return line_index_list

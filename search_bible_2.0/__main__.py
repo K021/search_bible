@@ -6,6 +6,10 @@ base = os.path.dirname(__file__)
 kb_path = os.path.join(base, "KoreanBible.txt")
 eb_path = os.path.join(base, "EnglishBible.txt")
 
+print('======================================================')
+print('=           SearchBible 2.0 by Joo-eon Kim           =')
+print('======================================================')
+
 while True:
     # 검색할 Scripture 선택
     scripture_type = input('Type 1 for KoreanBible, 2 for EnglishBible, or any other key to stop: ')
