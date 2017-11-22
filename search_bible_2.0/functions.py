@@ -38,7 +38,8 @@ def search_scripture(scripture_path, sub_scripture_path=None, is_lower=True):
                         elif k == (len(minus_keys) - 1):
                             number_of_result += 1
                             line_index_list.append(line_index)
-                            print(line)
+                            print()
+                            print(line, end='')
                             print_scripture_by_line(sub_scripture_path, line_index)
     print('-------------------------------------------------')
     print('{} verses'.format(number_of_result))
