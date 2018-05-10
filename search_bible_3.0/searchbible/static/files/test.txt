@@ -1,0 +1,99 @@
+In [1]: class C:
+   ...:     num = 0
+   ...:
+   ...:     @classmethod
+   ...:     def plus_class(cls):
+   ...:         print(hex(id(cls.num)))
+   ...:         cls.num += 1
+   ...:         print(hex(id(cls.num)))
+   ...:
+   ...:     def plus_instance(self):
+   ...:         print(hex(id(self.num)))
+   ...:         self.num += 1
+   ...:         print(hex(id(self.num)))
+   ...:
+
+In [2]: c = C()
+
+In [3]: c2 = C()
+
+In [4]: c3 = C()
+
+In [5]: def values_num(*args):
+   ...:     for v in args:
+   ...:         print(v.num)
+   ...:
+
+In [6]: def addresses_num(*args):
+   ...:     for v in args:
+   ...:         print(hex(id(v.num)))
+   ...:
+
+In [7]: values_num(c, c2, c3, C)
+0
+0
+0
+0
+
+In [8]: addresses_num(c, c2, c3, C)
+0x106729580
+0x106729580
+0x106729580
+0x106729580
+
+In [9]: c.plus_class()
+0x106729580
+0x1067295a0
+
+In [10]: values_num(c, c2, c3, C)
+1
+1
+1
+1
+
+In [11]: addresses_num(c, c2, c3, C)
+0x1067295a0
+0x1067295a0
+0x1067295a0
+0x1067295a0
+
+In [12]: c.plus_instance()
+0x1067295a0
+0x1067295c0
+
+In [13]: values_num(c, c2, c3, C)
+2
+1
+1
+1
+
+In [14]: addresses_num(c, c2, c3, C)
+0x1067295c0
+0x1067295a0
+0x1067295a0
+0x1067295a0
+
+In [15]: c.__class__.num
+Out[18]: 1
+
+In [16]: hex(id(c.__class__.num))
+Out[19]: '0x1067295a0'
+
+In [17]: c2.plus_class()
+0x1067295a0
+0x1067295c0
+
+In [18]: hex(id(c.__class__.num))
+Out[21]: '0x1067295c0'
+
+In [19]: values_num(c, c2, c3, C)
+2
+2
+2
+2
+
+In [20]: addresses_num(c, c2, c3, C)
+0x1067295c0
+0x1067295c0
+0x1067295c0
+0x1067295c0
