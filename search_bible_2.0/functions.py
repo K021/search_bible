@@ -1,5 +1,6 @@
 
-def search_scripture(scripture_path, sub_scripture_path=None, is_lower=True):
+
+def search_scripture(scripture_path, sub_scripture_path=None, is_lower=True, number_of_lines_to_print=1):
     """
     file type 의 scripture 객체를 받는다
     사용자에게서 검색어를 입력 받아 검색을 수행한다
@@ -7,6 +8,7 @@ def search_scripture(scripture_path, sub_scripture_path=None, is_lower=True):
     :param scripture_path: 검색을 수행할 txt 파일 path
     :param sub_scripture_path: scripture 와 비교할 파일 path
     :param is_lower: Capital letter 무시 여부
+    :param number_of_lines_to_print: 검색된 구절부터 몇 구절을 출력할 것인가
     :return: 검색 조건과 일치하는 line 의 index 리스트
     """
     scripture = open(scripture_path, 'r')
@@ -30,7 +32,14 @@ def search_scripture(scripture_path, sub_scripture_path=None, is_lower=True):
                     line_index_list.append(line_index)
                     print()
                     print(line, end='')
-                    print_scripture_by_line(sub_scripture_path, line_index)
+                    print_scripture_by_line(
+                        scripture_path,
+                        [line_index + x for x in range(1, number_of_lines_to_print)]
+                    )
+                    print_scripture_by_line(
+                        sub_scripture_path,
+                        [line_index + x for x in range(0, number_of_lines_to_print)]
+                    )
                 else:
                     for k, minus_key in enumerate(minus_keys):
                         if minus_key in line_temp:
@@ -40,7 +49,14 @@ def search_scripture(scripture_path, sub_scripture_path=None, is_lower=True):
                             line_index_list.append(line_index)
                             print()
                             print(line, end='')
-                            print_scripture_by_line(sub_scripture_path, line_index)
+                            print_scripture_by_line(
+                                scripture_path,
+                                [line_index + x for x in range(1, number_of_lines_to_print)]
+                            )
+                            print_scripture_by_line(
+                                sub_scripture_path,
+                                [line_index + x for x in range(0, number_of_lines_to_print)]
+                            )
     print('-------------------------------------------------')
     print('{} verses'.format(number_of_result))
     print('=================================================')
@@ -59,13 +75,13 @@ def print_scripture_by_line(scripture_path=None, linenos=None):
     :return: line number 인자 수, 출력된 줄 수 튜플
              scripture 가 없을 경우, None 출력
     """
-    if not scripture_path:
+    if not scripture_path or not linenos:
         return False
     scripture = open(scripture_path, 'r')
 
     if type(linenos) not in [int, list]:
         raise ValueError('The argument "lineno" must be int or list type.')
-    linenos = [linenos] if type(linenos) == int else list(linenos)
+    linenos = [linenos] if type(linenos) == int else linenos
 
     scripture_lineno = 0
     num_of_printed_line = 0
@@ -104,7 +120,7 @@ def get_keyword_input(is_lower=False):
     # 사용자 입력에 따라 추가적인 (+)키워드 또는 (-)키워드를 각각의 리스트에 저장한다
     while True:
         stop_or_go = input('Type 1 to add (+)keyword, 2 for (-)keyword, 0 to search now: ')
-        if stop_or_go == '0':
+        if stop_or_go in ['0', '']:
             break
         elif stop_or_go == '1':
             append_input_to_key(plus_keys, is_lower=is_lower)
@@ -120,7 +136,7 @@ def append_input_to_key(key_list, is_minus=False, is_lower=False):
     검색을 위한 키워드를 담는 리스트인 key_list 를 인자로 받아
     input 함수를 실행해서 얻은 문자열을 key_list 에 추가하여 return
 
-    :param key_list: 검색 키워드 리스트
+    :param key_list: 검색어 리스트
     :param is_minus: (-)검색어 여부
     :param is_lower: Capital letter 무시 여부
     :return: (input 문자열이 추가된) key_list
@@ -130,8 +146,10 @@ def append_input_to_key(key_list, is_minus=False, is_lower=False):
     plus_string = '(+)keyword: '
     minus_string = '(-)keyword: '
     ask_string = plus_string if not is_minus else minus_string
+    user_input = ''
 
-    user_input = input(ask_string)
+    while not user_input:
+        user_input = input(ask_string)
     if is_lower:
         user_input = user_input.lower()
 
