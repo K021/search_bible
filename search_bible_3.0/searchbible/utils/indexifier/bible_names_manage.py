@@ -14,6 +14,7 @@ __all__ = (
     'KRB_NEW_ABBR_LIST',
     'KRB_ABBR_LIST',
     'FULL_TO_ABBR',
+    'ABBR_TO_FULL',
 )
 
 # Bible Full Name List
@@ -57,9 +58,9 @@ ENB_OLD_FULL_LIST = (
     HAGGAI_FULL,
     ZECHARIAH_FULL,
     MALACHI_FULL,
-    MATTHEW_FULL,
 )
 ENB_NEW_FULL_LIST = (
+    MATTHEW_FULL,
     MARK_FULL,
     LUKE_FULL,
     JOHN_FULL,
@@ -129,9 +130,9 @@ KRB_OLD_FULL_LIST = (
     HAGGAI_KR,
     ZECHARIAH_KR,
     MALACHI_KR,
-    MATTHEW_KR,
 )
 KRB_NEW_FULL_LIST = (
+    MATTHEW_KR,
     MARK_KR,
     LUKE_KR,
     JOHN_KR,

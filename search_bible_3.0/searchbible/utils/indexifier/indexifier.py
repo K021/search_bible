@@ -4,6 +4,7 @@ import os
 from .variables import *
 from .bible_names_manage import ABBR_TO_FULL
 
+
 __all__ = (
     'indexify_bible',
     'indexify_by_file',
@@ -27,13 +28,19 @@ def indexify_bible(versions):
     딕셔너리 형태로 따로 파일 이름이 주어지지 않으면, utils.indexifier.variables 에 저장된 PATH_BIBLE_* 를 사용한다
     :return:
     """
+    # 이 로직 *args 와 **kwargs 로 바꾸기
     if type(versions) is str:
         if versions not in VERSION_TO_PATH:
             raise ValueError('Inappropriate argument value in "indexify_bible()" '
-                             'version information string must be included in VERSIONS_TO_PATH in indexifier.variables')
+                             'version information string must be included in VERSIONS_TO_PATH '
+                             'in indexifier.variables')
         indexify_by_file(VERSION_TO_PATH[versions], versions)
     elif type(versions) is list:
         for version in versions:
+            if version not in VERSION_TO_PATH:
+                raise ValueError('Inappropriate argument value in "indexify_bible()" '
+                                 'version information string must be included in VERSIONS_TO_PATH '
+                                 'in indexifier.variables')
             indexify_by_file(VERSION_TO_PATH[versions], version)
     elif type(versions) is dict:
         for version, path in versions.items():
@@ -60,16 +67,25 @@ def indexify_by_line(line, version):
     from scripture.models import Verse
 
     m = PATTERN_LINE.match(line)
-    book_name = m.group('book')
-    chapter_number = int(m.group('chapter'))
-    verse_number = int(m.group('verse'))
-    content = m.group('content')
+    if m:
+        book_name = ABBR_TO_FULL[m.group('book')]
+        chapter_number = int(m.group('chapter'))
+        verse_number = int(m.group('verse'))
+        content = m.group('content')
 
-    if not Verse.objects.filter(content=content).exists():
-        Verse.objects.create(
-            version=version,
-            book_name=ABBR_TO_FULL[book_name],
-            chapter_number=chapter_number,
-            verse_number=verse_number,
-            content=content,
-        )
+        if not Verse.objects.filter(version=version,
+                                    book_name=book_name,
+                                    chapter_number=chapter_number,
+                                    number=verse_number).exists():
+            Verse.objects.create(
+                version=version,
+                book_name=book_name,
+                chapter_number=chapter_number,
+                verse_number=verse_number,
+                content=content,
+            )
+        else:
+            print(book_name, chapter_number, verse_number, content)
+    else:
+        raise AttributeError(f'No match in this line {line}')
+

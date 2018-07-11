@@ -8,10 +8,19 @@ from utils.indexifier.bible_names_manage import (
 from utils.indexifier.variables import (
     ENGLISH, KOREAN,
     KJV, HKJ, HJV,
+    KJV_VERBOSE, HKJ_VERBOSE, HJV_VERBOSE
 )
 
 
-class BookManager(models.Manager):
+class CustomManager(models.Manager):
+    def get_or_create(self, **kwargs):
+        try:
+            return self.get(**kwargs), False
+        except self.model.DoesNotExist:
+            return self.create(**kwargs), True
+
+
+class BookManager(CustomManager):
     def create(self, name, version):
         if name in ENB_FULL_LIST:
             lang = ENGLISH
@@ -32,6 +41,7 @@ class BookManager(models.Manager):
         )
         book.save()
 
+        print(f'The {name} of {version} had been created.')
         return book
 
 
@@ -45,22 +55,23 @@ class Book(models.Model):
         (ENGLISH, 'English'),
     )
     VERSION = (
-        (KJV, KJV),
-        (HKJ, HKJ),
-        (HJV, HJV),
+        (KJV, KJV_VERBOSE),
+        (HKJ, HKJ_VERBOSE),
+        (HJV, HJV_VERBOSE),
     )
 
+    # name 은 기본적으로 FULL 로 저장한다
     name = models.CharField(max_length=15, choices=BOOK_NAME, unique=True)  # 성경 이름
     is_old = models.BooleanField()  # 구약 신약
     lang = models.CharField(max_length=2, choices=LANGUAGE)  # 언어
     version = models.CharField(max_length=4, choices=VERSION)  # 번역본 버전
-    number_of_chapters = models.IntegerField()  # 총 권 수
-    number_of_verses = models.IntegerField()  # 총 구절 수
+    number_of_chapters = models.IntegerField(default=0)  # 총 권 수
+    number_of_verses = models.IntegerField(default=0)  # 총 구절 수
 
     objects = BookManager()
 
     def __str__(self):
-        return f'{self.version}{self.name} ({self.get_gross_number_of_chapters()} chapters)'
+        return f'{self.version} {self.name} ({self.get_gross_number_of_chapters()} chapters)'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -75,7 +86,7 @@ class Book(models.Model):
         return self.verses.all().count()
 
 
-class ChapterManager(models.Manager):
+class ChapterManager(CustomManager):
     def create(self, book, number):
         chapter = self.model(
             book=book,
@@ -85,6 +96,7 @@ class ChapterManager(models.Manager):
 
         # chapter 생성할 때마다 book.number_of_chapters 증가
         book.number_of_chapters += 1
+        book.save()
 
         return chapter
 
@@ -93,7 +105,7 @@ class ChapterManager(models.Manager):
 class Chapter(models.Model):
     book = models.ForeignKey('Book', related_name='chapters', on_delete=models.CASCADE)
     number = models.IntegerField()
-    number_of_verses = models.IntegerField()  # gross number of verses
+    number_of_verses = models.IntegerField(default=0)  # gross number of verses
 
     objects = ChapterManager()
 
@@ -104,7 +116,7 @@ class Chapter(models.Model):
         return self.verses.all().count()
 
 
-class VerseManager(models.Manager):
+class VerseManager(CustomManager):
     def create(self, version, book_name, chapter_number, verse_number, content):
         """book 이나 chapter 를 따로 생성할 필요 없이 verse 생성할 때 같이 생성해 준다"""
         book = Book.objects.get_or_create(name=book_name, version=version)[0]
@@ -112,6 +124,7 @@ class VerseManager(models.Manager):
         verse = self.model(
             book=book,
             chapter=chapter,
+            book_name=book_name,
             chapter_number=chapter_number,
             number=verse_number,
             content=content,
@@ -120,8 +133,10 @@ class VerseManager(models.Manager):
 
         # verse 생성할 때마다 book.number_of_verse 증가
         book.number_of_verses += 1
+        book.save()
         # verse 생성할 때마다 chapter.number_of_verse 증가
         chapter.number_of_verses += 1
+        chapter.save()
 
         return verse
 
@@ -130,6 +145,8 @@ class VerseManager(models.Manager):
 class Verse(models.Model):
     book = models.ForeignKey('Book', related_name='verses', on_delete=models.CASCADE)  # bible book info
     chapter = models.ForeignKey('Chapter', related_name='verses', on_delete=models.CASCADE)  # bible chapter info
+    book_name = models.CharField(max_length=20)  # book_name 은 기본적으로 FULL 로 저장한다.
+    book_name_abbr = models.CharField(max_length=10)  # book_name abbreviation
     chapter_number = models.CharField(max_length=3)  # bible chapter number
     number = models.IntegerField()  # verse number
     content = models.TextField()  # verse content
@@ -137,10 +154,10 @@ class Verse(models.Model):
     objects = VerseManager()
 
     def __str__(self):
-        return f'{self.book.name}{self.chapter_number}:{self.number} {self.content}'
+        return f'{self.book_name}{self.chapter_number}:{self.number} {self.content}'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # verse location
-        self.loc = [self.book.version, self.book.name, self.chapter_number, self.number]
-
+        self.loc = [self.book.version, self.book_name, self.chapter_number, self.number]
+        self.book_name_abbr = FULL_TO_ABBR[self.book_name]

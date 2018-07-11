@@ -33,9 +33,9 @@ ENGLISH = 'en'
 KOREAN = 'kr'
 
 # scripture identification variables
-KJV = 'KJV'
-HKJ = 'HKJV'
-HJV = 'HJV'
+KJV = 'KJV'  # 영어 킹제임스
+HKJ = 'HKJV'  # 한글킹제임스
+HJV = 'HJV'  # 흠정역
 
 KJV_VERBOSE = 'King James Version'
 HKJ_VERBOSE = '한글 킹제임스'
