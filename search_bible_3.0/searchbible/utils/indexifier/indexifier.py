@@ -12,7 +12,7 @@ __all__ = (
 )
 
 
-def indexify_bible(versions):
+def indexify_bible(*versions, **version_to_filenames):
     """
     *versions 에는 세가지 타입의 변수가 올 수 있다.
         1. 문자열
@@ -28,23 +28,15 @@ def indexify_bible(versions):
     딕셔너리 형태로 따로 파일 이름이 주어지지 않으면, utils.indexifier.variables 에 저장된 PATH_BIBLE_* 를 사용한다
     :return:
     """
-    # 이 로직 *args 와 **kwargs 로 바꾸기
-    if type(versions) is str:
-        if versions not in VERSION_TO_PATH:
+    for version in versions:
+        if version not in VERSION_TO_PATH:
             raise ValueError('Inappropriate argument value in "indexify_bible()" '
                              'version information string must be included in VERSIONS_TO_PATH '
                              'in indexifier.variables')
-        indexify_by_file(VERSION_TO_PATH[versions], versions)
-    elif type(versions) is list:
-        for version in versions:
-            if version not in VERSION_TO_PATH:
-                raise ValueError('Inappropriate argument value in "indexify_bible()" '
-                                 'version information string must be included in VERSIONS_TO_PATH '
-                                 'in indexifier.variables')
-            indexify_by_file(VERSION_TO_PATH[versions], version)
-    elif type(versions) is dict:
-        for version, path in versions.items():
-            indexify_by_file(path, version)
+        indexify_by_file(VERSION_TO_PATH[version], version)
+
+    for version, path in version_to_filenames:
+        indexify_by_file(path, version)
 
 
 def indexify_by_file(path_or_file, version):
