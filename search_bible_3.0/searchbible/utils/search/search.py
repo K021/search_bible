@@ -15,7 +15,7 @@ from utils.indexifier.variables import (
 __all__ = (
     'search',
     'search_scripture',
-    'print_py_verse_location',
+    'print_by_verse_location',
     'get_keyword_string',
     'sort_keywords',
 )
@@ -62,13 +62,13 @@ def search_scripture(keywords, version, lang):
         n += 1
         print(f'#{n}: {EN_FULL_TO_KR_FULL[verse.book_name_en]} {verse.chapter_number}:{verse.number}')
         print(verse.content)
-        print_py_verse_location(compare_version, verse.book_name_en, verse.chapter_number, verse.number)
+        print_by_verse_location(compare_version, verse.book_name_en, verse.chapter_number, verse.number)
         print()
     print(f'총 {n} 개의 구절이 검색되었습니다.')
     print('==========================================================')
 
 
-def print_py_verse_location(version, book_name_en, chapter_number, verse_number):
+def print_by_verse_location(version, book_name_en, chapter_number, verse_number):
     print(
         Scripture.objects.get(
             version=version
@@ -78,7 +78,7 @@ def print_py_verse_location(version, book_name_en, chapter_number, verse_number)
             number=chapter_number
         ).verses.get(
             number=verse_number
-        )
+        ).content
     )
 
 

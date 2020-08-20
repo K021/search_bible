@@ -14,22 +14,13 @@ __all__ = (
 
 def indexify_bible(*versions, **version_to_filenames):
     """
-    *versions 에는 세가지 타입의 변수가 올 수 있다.
-        1. 문자열
-            'version'
-        2. 문자열 리스트
-            ['version1', 'version2', 'version3']
-        3. 딕셔너리
-            versions = {
-                'version1': 'file name1'
-                'version2': 'file name2'
-                'version3': 'file name3'
-            }
-    딕셔너리 형태로 따로 파일 이름이 주어지지 않으면, utils.indexifier.variables 에 저장된 PATH_BIBLE_* 를 사용한다
-    :return:
+    성경 version 또는, version 과 path 딕셔너리를 받아 해당 버전의 성경을 indexify 하는 함수
+    :param versions: 성경 version 이름
+    :param version_to_filenames: 성경 version 과 file path
+    :return: None
     """
     for version in versions:
-        if version not in VERSION_TO_PATH:
+        if version.upper() not in VERSION_TO_PATH:
             raise ValueError('Inappropriate argument value in "indexify_bible()" '
                              'version information string must be included in VERSIONS_TO_PATH '
                              'in indexifier.variables')

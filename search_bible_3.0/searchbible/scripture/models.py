@@ -213,7 +213,7 @@ class Verse(models.Model):
     objects = VerseManager()
 
     def __str__(self):
-        return f'{self.book_name}{self.chapter_number}:{self.number} {self.content} (self.version)'
+        return f'{self.book_name}{self.chapter_number}:{self.number} {self.content} ({self.version})'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
