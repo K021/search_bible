@@ -8,3 +8,6 @@
 
 ## python version
 3.6.3
+
+## 실행 화면
+![](search_bible_2.0_실행화면.png)
