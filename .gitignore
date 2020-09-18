@@ -1,6 +1,7 @@
 # Custom
 .idea
 config_secret
+scripture_files/*
 
 # Created by https://www.gitignore.io/api/macos,python,pycharm
 
